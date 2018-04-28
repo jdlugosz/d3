@@ -1,0 +1,5 @@
+#pragma once
+
+#define DLU_PORT_CHOICE_STD 1
+#define DLU_PORT_CHOICE_EXPERIMENTAL 2
+#define DLU_PORT_CHOICE_BOOST 3
