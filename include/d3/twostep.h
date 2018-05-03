@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iterator>
+#include <utility>
 
 
 #if defined X
@@ -11,7 +12,22 @@
 
 #define X_LIST \
 	X(begin,Begin) \
-	X(end,End)
+	X(end,End) \
+	X(cbegin,CBegin) \
+	X(cend,CEnd) \
+	X(rbegin,RBegin) \
+	X(rend,REnd) \
+	X(crbegin,CRBegin) \
+	X(crend,CREnd) \
+    X(advance,Advance) \
+    X(distance,Distance) \
+    X(next,Next) \
+    X(prev,Prev) \
+    X(size,Size) \
+    X(empty,Empty) \
+    X(data,Data) \
+    X(swap,Swap) \
+
 
 namespace Dlugosz::d3 {
 
