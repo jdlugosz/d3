@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+/tests/.vs
+/tests/*.filters
+/tests/*.user
+/tests/x64

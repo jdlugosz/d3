@@ -19,19 +19,23 @@
 	X(rend,REnd) \
 	X(crbegin,CRBegin) \
 	X(crend,CREnd) \
-    X(advance,Advance) \
-    X(distance,Distance) \
     X(next,Next) \
     X(prev,Prev) \
     X(size,Size) \
     X(empty,Empty) \
-    X(data,Data) \
-    X(swap,Swap) \
+    X(data,Data)
 
+
+#if 0
+// multiple arguments
+X(swap,Swap)
+    X(distance,Distance)
+    X(advance,Advance)
+#endif
 
 namespace Dlugosz::d3 {
 
-namespace twostep_wrapper {
+namespace detail_twostep_wrapper {
 // The std:: declarations need to be in scope for the two-step functions to work,
 // but we don't want them to appear as declared names in namespace twostep.  That way,
 // `using namespace twostep;` will bring in Begin but not bring in begin from std.
@@ -60,7 +64,7 @@ X_LIST
 } // scope wrapper
 
 // back in namespace d3
-namespace twostep = twostep_wrapper::twostep_inner;
+namespace twostep = detail_twostep_wrapper::twostep_inner;
 using namespace twostep;
 
 

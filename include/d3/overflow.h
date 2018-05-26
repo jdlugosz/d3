@@ -11,9 +11,9 @@ namespace detail {
     template <typename R>
     struct impl_result {
         template <typename T>
-        static R call (T x)
+        static R call (T&& x)
         {
-        return static_cast<R>(x);
+        return static_cast<R>(std::forward<T>(x));
         }
     };
 
@@ -21,10 +21,10 @@ namespace detail {
     template<>
     struct impl_result<as_signed> {
         template <typename T>
-        static auto call (T x)
+        static auto call (T&& x)
         {
         using R = std::make_signed_t<T>;
-        return impl_result<T>::call(x);
+        return impl_result<T>::call(std::forward<T>(x));
         }
     };
 
@@ -32,9 +32,9 @@ namespace detail {
 
 
 template <typename R, typename T>
-auto certainly (T x)
+auto certainly (T&& x)
 {
-    return detail::impl_result<R>::call(x);
+    return detail::impl_result<R>::call(std::forward<T>(x));
 }
 
 
