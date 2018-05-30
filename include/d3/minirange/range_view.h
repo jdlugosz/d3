@@ -13,7 +13,6 @@ struct range_view {
     auto end() const { return second; }
 
     range_view() =delete;
-//    range_view (const range_view&) =default;
     range_view (B_iter first, E_iter second) : first{first}, second{second} {}
     template <typename R /*, typename = is_range_t<R> */  >
     range_view (const R& range) : first{Begin(range), second{End(range)}}  {}
@@ -38,3 +37,12 @@ auto make_range_view (const R& range)
 }
 
 }}
+// back to global namespace here.
+
+
+// Iterator Traits of a range_view gives me that of its Begin/first member.
+template<typename B_iter, typename E_iter>
+struct std::iterator_traits<Dlugosz::d3::range_view<B_iter,E_iter> >
+    : public std::iterator_traits<B_iter>
+{ };
+

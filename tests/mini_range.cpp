@@ -106,4 +106,9 @@ TEST_CASE ("range_view") {
         cout << ", " << i;
     }
     cout << '\n';
+
+    bool found2 = std::binary_search (rv1.begin(), rv1.end(), 6);
+    cout << "binary search? " << found2 << '\n';
+
+    static_assert (std::is_same_v<std::iterator_traits<decltype (Begin(v1))>::iterator_category,  std::iterator_traits<decltype (rv1)>::iterator_category>);
 }
