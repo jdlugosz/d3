@@ -100,8 +100,10 @@ TEST_CASE ("range_view") {
 //    D3::range_view rv1 { v1 };   // needs user-defined deduction guide in order to do that.
     auto rv1 = D3::make_range_view(v1);
 
-    using std::size;
-    REQUIRE (  size(v1) == size(rv1)  );
-    REQUIRE (  sSize(v1) == sSize(rv1)  );
     REQUIRE (  std::equal (Begin(rv1),End(rv1), Begin(v1))  );
+    if (rv1) cout << *rv1++;
+    for (auto i : rv1) {
+        cout << ", " << i;
+    }
+    cout << '\n';
 }
