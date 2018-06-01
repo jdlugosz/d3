@@ -30,7 +30,7 @@ void f() {
 
 void g() {
 
-    range_view<count_iter> counter {{1},{42}};
+    range_view<count_iter<>> counter {{1},{42}};
 
     for (auto i : counter)
         cout << ' ' << i;
