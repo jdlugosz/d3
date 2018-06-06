@@ -1,6 +1,7 @@
 #include <iostream>
 #include <numeric>
 #include <algorithm>
+#include <sstream>
 #include <catch.hpp>  // https://github.com/catchorg/Catch2
 #include "d3/minirange.h"
 #include "d3/overflow.h"
@@ -86,8 +87,10 @@ TEST_CASE ("range_view") {
 
 TEST_CASE ("iota") {
     using D3::iota;
-    for (auto i : iota(10))  cout << i << ' ';
-    cout << '\n';
+    std::stringstream os;
+    for (auto i : iota(10))  os << i << ' ';
+    CHECK (os.str() == "0 1 2 3 4 5 6 7 8 9 ");
+//    for (auto i : 3+iota(9))  os << i << ' ';
 
 
 }

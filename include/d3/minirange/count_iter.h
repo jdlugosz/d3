@@ -26,8 +26,8 @@ struct count_iter {
     count_iter operator++ (int) noexcept { auto temp= *this;  ++value;  return temp;  }
     count_iter& operator+= (difference_type n) noexcept {  value+=n;  return *this;  }
     count_iter& operator-- () noexcept { --value;  return *this; }
-    count_iter operator-- (int)  { auto temp= *this;  --value;  return temp;  }
-    count_iter& operator-= (difference_type n) {  value-=n;  return *this;  }
+    count_iter operator-- (int) noexcept { auto temp= *this;  --value;  return temp;  }
+    count_iter& operator-= (difference_type n) noexcept {  value-=n;  return *this;  }
 };
 
 template <typename T>
