@@ -1,3 +1,7 @@
+#pragma once
+#include <type_traits>
+#include <iterator>
+
 namespace Dlugosz::d3 {
 
 inline namespace minirange {
@@ -6,36 +10,42 @@ inline namespace minirange {
 
 template <typename T = int>
 struct count_iter {
+    static_assert (std::is_integral_v<T>, "count_iter is meant for integer-like types");
     T value;
     using difference_type = std::make_signed_t<T>;
-    count_iter (T value) : value{value} { }
-    T operator* () const { return value; }
-    T& operator* () { return value; }
+    using value_type = T;
+    using pointer = T;
+    using reference = T&;
+    using iterator_category = std::random_access_iterator_tag;
+    count_iter() noexcept : value{T()} { }
+    explicit count_iter (T value) noexcept : value{value} { }
+    T operator* () const noexcept { return value; }
+    T& operator* () noexcept { return value; }
     // no operator-> because T has no members!
-    count_iter& operator++ ()  { ++value;  return *this; }
-    count_iter operator++ (int)  { auto temp= *this;  ++value;  return temp;  }
-    count_iter& operator+= (difference_type n) {  value+=n;  return *this;  }
-    count_iter& operator-- ()  { --value;  return *this; }
+    count_iter& operator++ () noexcept { ++value;  return *this; }
+    count_iter operator++ (int) noexcept { auto temp= *this;  ++value;  return temp;  }
+    count_iter& operator+= (difference_type n) noexcept {  value+=n;  return *this;  }
+    count_iter& operator-- () noexcept { --value;  return *this; }
     count_iter operator-- (int)  { auto temp= *this;  --value;  return temp;  }
     count_iter& operator-= (difference_type n) {  value-=n;  return *this;  }
 };
 
 template <typename T>
-bool operator== (const count_iter<T>& left, const count_iter<T>& right)
+bool operator== (const count_iter<T>& left, const count_iter<T>& right) noexcept
 {
     return left.value == right.value;
 }
 
 
 template <typename T>
-bool operator!= (const count_iter<T>& left, const count_iter<T>& right)
+bool operator!= (const count_iter<T>& left, const count_iter<T>& right) noexcept
 {
     return !(left==right);
 }
 
 
 template <typename T>
-auto operator+ (count_iter<T> left, typename count_iter<T>::difference_type right) -> count_iter<T>
+count_iter<T> operator+ (count_iter<T> left, typename count_iter<T>::difference_type right) noexcept
 {
     left += right;
     return left;
@@ -43,7 +53,7 @@ auto operator+ (count_iter<T> left, typename count_iter<T>::difference_type righ
 
 
 template <typename T>
-auto operator+ (typename count_iter<T>::difference_type left, count_iter<T> right) -> count_iter<T>
+count_iter<T> operator+ (typename count_iter<T>::difference_type left, count_iter<T> right) noexcept
 {
     right += left;
     return right;
@@ -51,7 +61,7 @@ auto operator+ (typename count_iter<T>::difference_type left, count_iter<T> righ
 
 
 template <typename T>
-auto operator- (count_iter<T> left, typename count_iter<T>::difference_type right) -> count_iter<T>
+count_iter<T> operator- (count_iter<T> left, typename count_iter<T>::difference_type right) noexcept
 {
     left -= right;
     return left;
@@ -59,34 +69,35 @@ auto operator- (count_iter<T> left, typename count_iter<T>::difference_type righ
 
 
 template <typename T>
-auto operator- (count_iter<T> left, count_iter<T> right) -> typename count_iter<T>::difference_type
+typename count_iter<T>::difference_type
+operator- (count_iter<T> left, count_iter<T> right) noexcept
 {
     return right.value - left.value;
 }
 
 template <typename T>
-bool operator< (count_iter<T> left, count_iter<T> right)
+bool operator< (count_iter<T> left, count_iter<T> right) noexcept
 {
     return left.value < right.value;
 }
 
 
 template <typename T>
-bool operator> (count_iter<T> left, count_iter<T> right)
+bool operator> (count_iter<T> left, count_iter<T> right) noexcept
 {
     return left.value > right.value;
 }
 
 
 template <typename T>
-bool operator<= (count_iter<T> left, count_iter<T> right)
+bool operator<= (count_iter<T> left, count_iter<T> right) noexcept
 {
     return left.value <= right.value;
 }
 
 
 template <typename T>
-bool operator>= (count_iter<T> left, count_iter<T> right)
+bool operator>= (count_iter<T> left, count_iter<T> right) noexcept
 {
     return left.value >= right.value;
 }
@@ -95,13 +106,4 @@ bool operator>= (count_iter<T> left, count_iter<T> right)
 
 }}
 
-
-template <typename T>
-struct std::iterator_traits<Dlugosz::d3::count_iter<T>> {
-    using difference_type = typename Dlugosz::d3::count_iter<T>::difference_type;
-    using value_type = T;
-    using pointer = T;
-    using reference = T&;
-    using iterator_category = std::bidirectional_iterator_tag;
-};
 

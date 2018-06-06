@@ -30,7 +30,7 @@ void f() {
 
 void g() {
 
-    range_view<count_iter<>> counter {{1},{42}};
+    range_view<count_iter<>> counter {count_iter{1},count_iter{42}};
 
     for (auto i : counter)
         cout << ' ' << i;
@@ -81,4 +81,13 @@ TEST_CASE ("range_view") {
     cout << "binary search? " << found2 << '\n';
 
     static_assert (std::is_same_v<std::iterator_traits<decltype (Begin(v1))>::iterator_category,  std::iterator_traits<decltype (rv1)>::iterator_category>);
+}
+
+
+TEST_CASE ("iota") {
+    using D3::iota;
+    for (auto i : iota(10))  cout << i << ' ';
+    cout << '\n';
+
+
 }

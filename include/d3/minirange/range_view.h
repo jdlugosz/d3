@@ -1,4 +1,5 @@
 
+#pragma once
 #include "d3/is_range.h"
 
 namespace Dlugosz::d3 {
