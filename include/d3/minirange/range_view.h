@@ -46,15 +46,59 @@ auto make_range_view (const R& range)
 template <typename Tb, typename Te>
 bool operator== (const range_view<Tb,Te>& left, const range_view<Tb,Te>& right) noexcept
 {
-    return left.first == right.first;
+    // comparing ranges compares both ends
+    return left.first == right.first && left.second == right.second;
 }
 
 
 template <typename Tb, typename Te>
-bool operator!= (const range_view<Tb,Te>& left, const range_view<Tb,Te>& right) noexcept
+bool operator== (const range_view<Tb,Te>& left, const Tb& right) noexcept
+{
+    return left.first == right;
+}
+
+
+
+template <typename Tb, typename Te>
+bool operator== (const Tb& left, const range_view<Tb,Te>& right) noexcept
+{
+    return left == right.first;
+}
+
+
+
+////////
+namespace rv_detail {
+
+template <typename T1, typename T2>
+struct comp_args
+{
+    static constexpr bool value = std::is_same_v<T1,T2>;
+};
+
+
+template <typename Tb, typename Te>
+struct comp_args<range_view<Tb,Te>, Tb>
+{
+    static constexpr bool value = true;
+};
+
+
+template <typename T1, typename T2>
+inline constexpr bool comp_args_v = comp_args<T1,T2>::value || comp_args<T2,T1>::value;
+
+}
+////////
+
+
+template <typename T1, typename T2,
+    typename = std::enable_if_t<rv_detail::comp_args_v<T1,T2> > >
+bool operator!= (const T1& left, const T2& right) noexcept
 {
     return !(left==right);
 }
+
+
 
 
 template <typename Tb, typename Te>
@@ -88,33 +132,62 @@ operator- (range_view<Tb,Te> left, range_view<Tb,Te> right) noexcept
     return right.first - left.first;
 }
 
+
+// ===== relational
+
 template <typename Tb, typename Te>
-bool operator< (range_view<Tb,Te> left, range_view<Tb,Te> right) noexcept
+bool operator< (range_view<Tb,Te> left, Tb right) noexcept
 {
-    return left.first < right.first;
+    return left.first < right;
 }
 
 
 template <typename Tb, typename Te>
-bool operator> (range_view<Tb,Te> left, range_view<Tb,Te> right) noexcept
+bool operator< (Tb left, range_view<Tb,Te> right) noexcept
 {
-    return left.first > right.first;
+    return left < right.first;
 }
 
 
 template <typename Tb, typename Te>
-bool operator<= (range_view<Tb,Te> left, range_view<Tb,Te> right) noexcept
+bool operator> (range_view<Tb,Te> left, Tb right) noexcept
 {
-    return left.first <= right.first;
+    return left.first > right;
 }
 
 
 template <typename Tb, typename Te>
-bool operator>= (range_view<Tb,Te> left, range_view<Tb,Te> right) noexcept
+bool operator> (Tb left, range_view<Tb,Te> right) noexcept
 {
-    return left.first >= right.first;
+    return left > right.first;
 }
 
+
+template <typename Tb, typename Te>
+bool operator<= (range_view<Tb,Te> left, Tb right) noexcept
+{
+    return left.first <= right;
+}
+
+
+template <typename Tb, typename Te>
+bool operator<= (Tb left, range_view<Tb,Te> right) noexcept
+{
+    return left <= right.first;
+}
+
+template <typename Tb, typename Te>
+bool operator>= (range_view<Tb,Te> left, Tb right) noexcept
+{
+    return left.first >= right;
+}
+
+
+template <typename Tb, typename Te>
+bool operator>= (Tb left, range_view<Tb,Te> right) noexcept
+{
+    return left >= right.first;
+}
 
 
 
