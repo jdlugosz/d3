@@ -190,7 +190,27 @@ TEST_CASE ("iota and range_view") {
 
 
     SECTION ("add") {
-    }
+        constexpr char buffer[] = "This is a test.";
+        auto buf_it1 = Begin(buffer) + 5;
+        auto buf_view = make_range_view(buffer);
+        // range_view + distance, both order of arguments
+        CHECK (buf_it1 == buf_view+5);
+        CHECK (buf_it1 == 5+buf_view);
+        auto bv2 = buf_view;
+        // member +=
+        bv2 += 5;
+        CHECK (bv2 == buf_it1);
+        // ++, both ways
+        auto result= ++bv2;
+        ++buf_it1;
+        CHECK (result == bv2);  // returns new value after incrementing
+        CHECK (result == buf_it1);
+        result= bv2++;
+        CHECK_FALSE (result == bv2);  // should return old value before incrementing
+        CHECK (result == buf_it1);
+        buf_it1++;
+        CHECK (bv2 == buf_it1);
+}
 
 
     SECTION ("subtract") {

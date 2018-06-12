@@ -125,6 +125,8 @@ range_view<Tb,Te> operator- (range_view<Tb,Te> left, typename range_view<Tb,Te>:
 }
 
 
+
+// >>>>>> NO
 template <typename Tb, typename Te>
 typename range_view<Tb,Te>::difference_type
 operator- (range_view<Tb,Te> left, range_view<Tb,Te> right) noexcept
