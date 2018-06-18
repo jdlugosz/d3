@@ -99,6 +99,10 @@ bool operator!= (const T1& left, const T2& right) noexcept
 }
 
 
+// ===== arithmetic
+// + and - act as begin implicitly, only when the other argument is an iterator or distance.
+// you cannot treat _both_ arguments as implicit begin(), since that could be misunderstood.
+// (arithmetic is not defined between ranges.  These are only for treating a range as a smart iterator.)
 
 
 template <typename Tb, typename Te>
@@ -125,14 +129,23 @@ range_view<Tb,Te> operator- (range_view<Tb,Te> left, typename range_view<Tb,Te>:
 }
 
 
-
-// >>>>>> NO
 template <typename Tb, typename Te>
 typename range_view<Tb,Te>::difference_type
-operator- (range_view<Tb,Te> left, range_view<Tb,Te> right) noexcept
+operator- (range_view<Tb,Te> left, Tb right) noexcept
 {
-    return right.first - left.first;
+    return left.first - right;
 }
+
+
+template <typename Tb, typename Te>
+typename range_view<Tb,Te>::difference_type
+operator- (Tb left, range_view<Tb,Te> right) noexcept
+{
+    return left - right.first;
+}
+
+
+
 
 
 // ===== relational

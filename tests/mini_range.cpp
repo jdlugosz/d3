@@ -95,12 +95,18 @@ template<typename R1, typename R2>
 using can_relate = decltype( (std::declval<R1>() < std::declval<R2>()) || (std::declval<R1>() > std::declval<R2>())
     || (std::declval<R1>() <= std::declval<R2>())  || (std::declval<R1>() >= std::declval<R2>()) );
 
+template<typename R1, typename R2>
+using can_plus = decltype( std::declval<R1>() + std::declval<R2>() );
+
+
 TEST_CASE ("iota and range_view") {
     using D3::count_iter;
     using D3::iota;
     using D3::make_range_view;
     using D3::range_view;
     std::stringstream os;
+
+    constexpr char buffer[] = "This is a test.";
 
     SECTION ("example usage") {
         for (auto i : iota(10))  os << i << ' ';
@@ -156,7 +162,6 @@ TEST_CASE ("iota and range_view") {
         // there is no ordering between range views.  Relation operations are defined for using
         // the range view as a smart iterator.  To prevent misunderstanding, one side must explicitly
         // be an iterator.
-        constexpr char buffer[] = "This is a test.";
         auto buf_it1 = Begin(buffer) + 5;
         range_view buf_view { buf_it1, End(buffer)};
         REQUIRE (buf_it1 == buf_view);
@@ -190,13 +195,13 @@ TEST_CASE ("iota and range_view") {
 
 
     SECTION ("add") {
-        constexpr char buffer[] = "This is a test.";
         auto buf_it1 = Begin(buffer) + 5;
         auto buf_view = make_range_view(buffer);
         // range_view + distance, both order of arguments
         CHECK (buf_it1 == buf_view+5);
         CHECK (buf_it1 == 5+buf_view);
         auto bv2 = buf_view;
+        static_assert (std::is_same_v<decltype(bv2),decltype(buf_view)>);
         // member +=
         bv2 += 5;
         CHECK (bv2 == buf_it1);
@@ -210,10 +215,39 @@ TEST_CASE ("iota and range_view") {
         CHECK (result == buf_it1);
         buf_it1++;
         CHECK (bv2 == buf_it1);
+        // adding two ranges doesn’t make sence
+        //  auto result= buf_view + bv2
+        static_assert (!(D3::is_detected_v<can_plus, decltype(buf_view),decltype(bv2)>), "view + view");
 }
 
 
     SECTION ("subtract") {
+        auto buf_it1 = Begin(buffer) + 10;
+        auto buf_view = make_range_view(buffer);
+        buf_view += 10;
+        REQUIRE (buf_view == buf_it1);
+        // operator-- both ways
+        auto result= --buf_view;
+        CHECK (result == buf_view);  // returns the new value after decrementing
+        --buf_it1;
+        CHECK (result == buf_it1);
+        result= buf_view--;
+        CHECK_FALSE (result == buf_view);  // returns original value
+        CHECK (result == buf_it1);
+        buf_it1--;
+        CHECK (buf_view == buf_it1);
+        // -=
+        buf_view -= 4;
+        auto it2 = buf_it1 - 4;
+        CHECK (buf_view == it2);
+        // non-member - three forms
+        CHECK (buf_view - 3 == it2 - 3);  // range_view - difference_type
+        // range_view - iterator -> difference
+        CHECK (buf_view - buf_it1 == -4);
+        CHECK (buf_view - it2 == 0);
+        // iterator - range_view -> difference
+        CHECK (buf_it1 - buf_view == 4);
+        CHECK (it2 - buf_view == 0);
     }
 
 }
