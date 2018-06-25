@@ -17,7 +17,7 @@ namespace D3 = Dlugosz::d3;
 using namespace D3::twostep;
 using D3::sSize;
 
-
+int ϑ_as_symbol= 7;
 
 template <typename T>
 using complex_array_ref_t = T(&)[2];
@@ -71,7 +71,7 @@ struct test_pole_pair : D3::debug::noisy<test_pole_pair_label>
 
 
 
-TEST_CASE ("structured binding exploration", "[exploration]") {
+TEST_CASE ("structured binding exploration", "[exploration][!hide]") {
     using ℂ = std::complex<double>;
     ℂ z1 = sin(1.0+2.1i);
     cout << z1 << '\n';
@@ -124,8 +124,9 @@ public:
         return raw_score * 50/a;
         }
     template <size_t I>
-    auto get() const {
-        if constexpr (I==0) return get_name();
+    decltype(auto) get() const {
+//        if constexpr (I==0) return get_name();
+        if constexpr (I==0) return static_cast<const string&>(name);
         else if constexpr (I==1)  return get_days();
         else if constexpr (I==2)  return get_score();
         else static_assert (I>=0 && I<3);
@@ -144,10 +145,51 @@ public:
     using type = decltype (declval<fred_t>().get<I>());
 };
 
+}
+
+
+
+extern const char test_sam[] = "## sam_t";
+
+class sam_t : D3::debug::noisy<test_sam> {
+    string name;
+    int age;
+    double raw_score;
+public:
+    sam_t (string_view s, int age, double score) : name{s}, age{age}, raw_score{score} {};
+    string get_name() const { return name; }
+    int get_days() const { return 365*age; }
+    double get_score() const
+        {
+        int a = std::min(age,50);
+        return raw_score * 50/a;
+        }
+    template <size_t I>
+    decltype(auto) get() {
+//        if constexpr (I==0) return get_name();
+        if constexpr (I==0) return static_cast<string&>(name);
+        else if constexpr (I==1)  return get_days();
+        else if constexpr (I==2)  return get_score();
+        else static_assert (I>=0 && I<3);
+    }
 };
 
 
-TEST_CASE ("structured binding custom", "[exploration]") {
+namespace std {
+
+template<>
+class tuple_size<sam_t> : public integral_constant<size_t, 3> {};
+
+template<size_t I>
+class std::tuple_element<I, sam_t> {
+public:
+    using type = decltype (declval<sam_t>().get<I>());
+};
+
+}
+
+
+TEST_CASE ("structured binding custom", "[exploration][!hide]") {
 
     SECTION ("by value") {
         cout << "Fred 1  ";
@@ -166,6 +208,15 @@ TEST_CASE ("structured binding custom", "[exploration]") {
         fred_t fred { "Freddy", 24, 72.3 };
         const auto& [v0,v1,v2] = fred;
         cout << v0 << ", " << v1 << ", " << v2 << '\n';
+        cout << "address of name: " << &v0 << " should be inside Freddy.\n";
+    }
+    SECTION ("reference binding to original") {
+        cout << "Sam 1  ";
+        sam_t sam { "Sam", 26, 80.7 };
+        auto& [name,v1,v2] = sam;
+        name += " Jones";
+        REQUIRE (name == sam.get_name());
+        REQUIRE (sam.get_name() == "Sam Jones");
     }
 };
 
