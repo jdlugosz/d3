@@ -16,7 +16,10 @@
 #elif defined _MSC_VER
 // The Microsoft compiler
 
-#if _MSC_FULL_VER > 191426429  // the last one I tried
+#if _MSC_FULL_VER > 191526608  // the last one I tried
+
+//  >>> NOTE: next time compiler updates, also remove the work-around in twostep.h !!!!             <<<<
+
 # error Check to see if detection idiom is avalable yet
 #else
 #define DLU_PORT_DETECT DLU_PORT_CHOICE_BOOST

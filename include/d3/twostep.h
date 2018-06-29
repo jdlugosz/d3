@@ -50,7 +50,7 @@ namespace twostep_inner {
 
 #define X(xname,XName) \
 inline constexpr auto XName = [](auto&& r) \
-    noexcept(noexcept(xname(std::forward<decltype(r)>(r)))) /* ask if the code is noexcept */ \
+   /* noexcept(noexcept(xname(std::forward<decltype(r)>(r)))) /* ask if the code is noexcept */ \
     -> decltype(      xname(std::forward<decltype(r)>(r)))  /* using return type to do SFINAE */ \
         {      return xname(std::forward<decltype(r)>(r));  /* the real body to execute */ };
 
