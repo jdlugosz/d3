@@ -251,3 +251,13 @@ TEST_CASE ("iota and range_view") {
     }
 
 }
+
+
+TEST_CASE ("indexed range") {
+    constexpr char buffer[] = "This is a test.";
+    std::vector<float> float_vec (5);
+    using D3::indexed_range;
+    indexed_range<std::vector<float>> rr1 (float_vec);
+    indexed_range<std::vector<float>> rr2 {float_vec};
+
+}
