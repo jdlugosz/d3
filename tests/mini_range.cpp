@@ -253,11 +253,35 @@ TEST_CASE ("iota and range_view") {
 }
 
 
+// easy way to create an rvalue from test values
+template <typename T>
+T identity (const T& param)
+{
+    return param;
+}
+
 TEST_CASE ("indexed range") {
     constexpr char buffer[] = "This is a test.";
     std::vector<float> float_vec (5);
     using D3::indexed_range;
-    indexed_range<std::vector<float>> rr1 (float_vec);
-    indexed_range<std::vector<float>> rr2 {float_vec};
+    using D3::iota;
 
+    SECTION ("constructor overloads") {
+        indexed_range<std::vector<float>> rr1 (float_vec);
+        indexed_range<std::vector<float>> rr2 {identity(float_vec)};
+        indexed_range rr3 {float_vec};  // class argument deduction
+    }
+
+    SECTION ("iota") {
+        auto rr1 = iota (float_vec);
+        auto rr2 = iota (buffer);
+    }
+
+    SECTION ("semantics") {
+        auto rr1 = iota (float_vec);
+        // n4569 §9.5.4 states that the `for` loop will first look for unqualified member names `begin` and `end`.
+        auto it1 = rr1.begin();
+        auto end1 = rr1.end();
+
+    }
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+//#include <iterator>
 #include "range_view.h"
 #include "count_iter.h"
 #include "is_range.h"
@@ -29,19 +30,39 @@ class indexed_range {
 public:
     indexed_range (R&& param) : r1{param}  { }
     indexed_range (R& param) : r1{param}  { }
+    auto end() const { return End(r1); }
 
+    using r_it = decltype(Begin(r1));
+    class iterator {
+        r_it it;  // regular iterator to collection
+        size_t index = 0;
+    public:
+        explicit iterator (r_it it) : it{it} {}
+        bool operator != (r_it e) const
+        {
+            return it != e;
+        }
+    };
+
+    iterator begin() const { return iterator{Begin(r1)}; }
 };
 
 
-#if 0
+template <typename R>
+bool operator != (const typename indexed_range<R>::iterator& e, typename indexed_range<R>::r_it b)
+{
+    return b != e;
+}
+
+
+
 template <typename R,
     typename = std::enable_if_t<is_range_v<R>> >
-auto make_indexed_range (R&& r)   // temporary name, before overloading
+auto iota (R&& r)
 {
     return indexed_range (std::forward<R>(r));
 }
 
-#endif
 }}
 
 
