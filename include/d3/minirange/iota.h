@@ -30,7 +30,7 @@ class indexed_range {
 public:
     indexed_range (R&& param) : r1{param}  { }
     indexed_range (R& param) : r1{param}  { }
-    auto end() const { return End(r1); }
+    auto end() const  { return End(r1); }
 
     using r_it = decltype(Begin(r1));
     class iterator {
@@ -38,13 +38,25 @@ public:
         size_t index = 0;
     public:
         explicit iterator (r_it it) : it{it} {}
+
+        auto i() const { return index; }
+        auto base_it() const { return it; }
+
         bool operator != (r_it e) const
         {
             return it != e;
         }
+        void operator++() { ++it; ++index; }
+
+        struct indexed_item {
+            size_t index;
+            typename std::iterator_traits<r_it>::reference item;
+        };
+        indexed_item operator*() const { return {index,*it}; }
     };
 
-    iterator begin() const { return iterator{Begin(r1)}; }
+    iterator begin() const  { return iterator{Begin(r1)}; }
+
 };
 
 

@@ -260,9 +260,17 @@ T identity (const T& param)
     return param;
 }
 
+
+template <typename T>
+const void* visualize_iterator (const T& it)
+{
+    return &(*it);
+}
+
+
 TEST_CASE ("indexed range") {
     constexpr char buffer[] = "This is a test.";
-    std::vector<float> float_vec (5);
+    std::vector<float> float_vec { 2, 42, 13, 99, 0.25 };
     using D3::indexed_range;
     using D3::iota;
 
@@ -280,8 +288,26 @@ TEST_CASE ("indexed range") {
     SECTION ("semantics") {
         auto rr1 = iota (float_vec);
         // n4569 §9.5.4 states that the `for` loop will first look for unqualified member names `begin` and `end`.
-        auto it1 = rr1.begin();
-        auto end1 = rr1.end();
+        auto it1 = std::move(rr1).begin();
+        auto end1 = std::move(rr1).end();
+        // should fail to compile without `move`.  Normally we don’t want to allow saving named values of indexed_range
+//        cout << "test vec is at " << visualize_iterator(Begin(float_vec)) << '\n';
 
+        for (; it1 != end1; ++it1) {
+#if 0
+            const auto base_it = it1.base_it();
+            cout << "0 vec[" << it1.i() << "] == " << visualize_iterator(base_it) << " ==> " << *base_it << '\n';
+
+            auto thing = *it1;
+            cout << "1 vec[" << thing.index << "] == " << thing.item << '\n';
+#endif
+            auto [i,item] = *it1;
+            cout << "2 vec[" << i << "] == " << item << '\n';
+            item *= 2.25;
+            REQUIRE(item == float_vec[i]);  // item is a reference to the original in the collection
+        }
+        for (auto [i,item] : iota(float_vec)) {
+            cout << "3 vec[" << i << "] == " << item << '\n';
+        }
     }
 }
