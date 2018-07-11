@@ -28,8 +28,8 @@ template <typename R>
 class indexed_range {
     R& r1;
 public:
-    indexed_range (R&& param) : r1{param}  { }
     indexed_range (R& param) : r1{param}  { }
+    // indexed_range (R&& param)
     auto end() const  { return End(r1); }
 
     using r_it = decltype(Begin(r1));
@@ -67,13 +67,23 @@ bool operator != (const typename indexed_range<R>::iterator& e, typename indexed
 }
 
 
-
+#if 0
 template <typename R,
     typename = std::enable_if_t<is_range_v<R>> >
 auto iota (R&& r)
 {
     return indexed_range (std::forward<R>(r));
 }
+#endif
+
+template <typename R,
+    typename = std::enable_if_t<is_range_v<R>> >
+    auto iota (R& r)
+{
+    return indexed_range (r);
+}
+
+
 
 }}
 

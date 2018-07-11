@@ -268,6 +268,7 @@ const void* visualize_iterator (const T& it)
 }
 
 
+
 TEST_CASE ("indexed range") {
     constexpr char buffer[] = "This is a test.";
     std::vector<float> float_vec { 2, 42, 13, 99, 0.25 };
@@ -276,13 +277,14 @@ TEST_CASE ("indexed range") {
 
     SECTION ("constructor overloads") {
         indexed_range<std::vector<float>> rr1 (float_vec);
-        indexed_range<std::vector<float>> rr2 {identity(float_vec)};
+//        indexed_range<std::vector<float>> rr2 {identity(float_vec)};
         indexed_range rr3 {float_vec};  // class argument deduction
     }
 
     SECTION ("iota") {
         auto rr1 = iota (float_vec);
         auto rr2 = iota (buffer);
+//        auto rr3 = iota (identity(std::string(buffer)));
     }
 
     SECTION ("semantics") {
